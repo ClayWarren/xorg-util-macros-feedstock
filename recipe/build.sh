@@ -19,25 +19,6 @@ else
     uprefix="$PREFIX"
 fi
 
-# On Windows we need to regenerate the configure scripts.
-if [ -n "$CYGWIN_PREFIX" ] ; then
-    am_version=1.16 # keep sync'ed with meta.yaml
-    export ACLOCAL=aclocal-$am_version
-    export AUTOMAKE=automake-$am_version
-    autoreconf_args=(
-        --force
-        --install
-        -I "$BUILD_PREFIX_M/Library/usr/share/aclocal"
-    )
-    autoreconf "${autoreconf_args[@]}"
-
-    # And we need to add the search path that lets libtool find the
-    # msys2 stub libraries for ws2_32.
-    platlibs=$(cd $(dirname $($CC --print-prog-name=ld))/../sysroot/usr/lib && pwd -W)
-    test -f $platlibs/libws2_32.a || { exit "error locating libws2_32" ; exit 1 ; }
-    export LDFLAGS="$LDFLAGS -L$platlibs"
-fi
-
 export PKG_CONFIG_LIBDIR=$uprefix/lib/pkgconfig:$uprefix/share/pkgconfig
 configure_args=(
     --prefix=$mprefix
